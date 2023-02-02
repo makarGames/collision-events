@@ -3,21 +3,19 @@ using UnityEngine;
 
 namespace Game.Scripts.CollisionEvents
 {
-    public class CollisionEvents<T>
+    public class InteractEvents<T>
     {
-        public event Action<T> OnTargetTriggerEnteredEvent;
-        public event Action<T> OnTargetTriggerExitEvent;
-        public event Action<T> OnTargetTriggerStaysEvent;
         public event Action<T> OnTargetCollisionEnteredEvent;
         public event Action<T> OnTargetCollisionExitEvent;
+        public event Action<T> OnTargetTriggerEnteredEvent;
+        public event Action<T> OnTargetTriggerExitEvent;
 
-        public CollisionEvents(CollisionChecker collisionChecker)
+        public InteractEvents(PhysicalInteractChecker physicalInteractChecker)
         {
-            collisionChecker.OnTriggerEnteredEvent += CheckTargetTriggerEntered;
-            collisionChecker.OnTriggerExitEvent += CheckTargetTriggerExit;
-            collisionChecker.OnTriggerStaysEvent += CheckTargetTriggerStays;
-            collisionChecker.OnCollisionEnteredEvent += CheckTargetCollisionEntered;
-            collisionChecker.OnCollisionExitEvent += CheckTargetCollisionExit;
+            physicalInteractChecker.OnCollisionEnteredEvent += CheckTargetCollisionEntered;
+            physicalInteractChecker.OnCollisionExitEvent += CheckTargetCollisionExit;
+            physicalInteractChecker.OnTriggerEnteredEvent += CheckTargetTriggerEntered;
+            physicalInteractChecker.OnTriggerExitEvent += CheckTargetTriggerExit;
         }
 
         private void CheckTargetTriggerEntered(Collider other)
@@ -40,16 +38,6 @@ namespace Game.Scripts.CollisionEvents
             }
         }
 
-        private void CheckTargetTriggerStays(Collider other)
-        {
-            var targetComponent = other.GetComponent<T>();
-
-            if (targetComponent != null)
-            {
-                OnTargetTriggerStaysEvent?.Invoke(targetComponent);
-            }
-        }
-
         private void CheckTargetCollisionEntered(Collision other)
         {
             var targetComponent = other.gameObject.GetComponent<T>();
@@ -59,6 +47,7 @@ namespace Game.Scripts.CollisionEvents
                 OnTargetCollisionEnteredEvent?.Invoke(targetComponent);
             }
         }
+
 
         private void CheckTargetCollisionExit(Collision other)
         {
