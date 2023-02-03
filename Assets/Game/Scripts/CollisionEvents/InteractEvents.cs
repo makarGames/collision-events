@@ -18,44 +18,28 @@ namespace Game.Scripts.CollisionEvents
             physicalInteractChecker.OnTriggerExitEvent += CheckTargetTriggerExit;
         }
 
-        private void CheckTargetTriggerEntered(Collider other)
-        {
-            var targetComponent = other.GetComponent<T>();
+        private void CheckTargetCollisionEntered(Collision other) => CheckInteraction(other, OnTargetCollisionEnteredEvent);
+        private void CheckTargetCollisionExit(Collision other) => CheckInteraction(other, OnTargetCollisionExitEvent);
+        private void CheckTargetTriggerEntered(Collider other) => CheckInteraction(other, OnTargetTriggerEnteredEvent);
+        private void CheckTargetTriggerExit(Collider other) => CheckInteraction(other, OnTargetTriggerExitEvent);
 
-            if (targetComponent != null)
+        private void CheckInteraction(Collision other, Action<T> onInteract)
+        {
+            var isContain = other.gameObject.TryGetComponent<T>(out var targetComponent);
+
+            if (isContain)
             {
-                OnTargetTriggerEnteredEvent?.Invoke(targetComponent);
+                onInteract?.Invoke(targetComponent);
             }
         }
-
-        private void CheckTargetTriggerExit(Collider other)
+        
+        private void CheckInteraction(Component other, Action<T> onInteract)
         {
-            var targetComponent = other.GetComponent<T>();
+            var isContain = other.TryGetComponent<T>(out var targetComponent);
 
-            if (targetComponent != null)
+            if (isContain)
             {
-                OnTargetTriggerExitEvent?.Invoke(targetComponent);
-            }
-        }
-
-        private void CheckTargetCollisionEntered(Collision other)
-        {
-            var targetComponent = other.gameObject.GetComponent<T>();
-
-            if (targetComponent != null)
-            {
-                OnTargetCollisionEnteredEvent?.Invoke(targetComponent);
-            }
-        }
-
-
-        private void CheckTargetCollisionExit(Collision other)
-        {
-            var targetComponent = other.gameObject.GetComponent<T>();
-
-            if (targetComponent != null)
-            {
-                OnTargetCollisionExitEvent?.Invoke(targetComponent);
+                onInteract?.Invoke(targetComponent);
             }
         }
     }
